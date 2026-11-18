@@ -10,7 +10,7 @@ sources do not say which one applies to the OS/2 port.
 | `src\BTTV\bt848.h`, `bttvp.h`, `bttv.h` | Linux `bttv`, Ralph Metzler 1996-98 | GNU General Public License (version 2 or later, standard Linux text) in `bt848.h` and `bttvp.h`; `bttv.h` has only the copyright line |
 | `src\BTTV\bttv-cards.c` (card table section), `tda7432.c` | Csaba Halasz 1999; Eric Sandeen 2000 | "placed under the terms of the GNU General Public License" |
 | `src\BTTV\bttv-driver.c`, `bttv-if.c`, `msp3400.c`, `tuner.c`, `tvaudio.c`, `tda9875.c`, `tda9887.c`, `bt832.h`, `id.h` | Linux kernel drivers adapted for OS/2 (Stefan Milcke, 2001-2004) | only "Autor / Erstellt am" lines of Stefan Milcke, no license text (the Linux originals are GPL) |
-| `src\Lib32\hwaccess.h` | Creative Labs (Linux emu10k1 driver) 1999-2000 | GNU General Public License |
+| `src\Lib32\hwaccess.h` | Creative Labs 1999-2000 (probably from the Linux emu10k1 sound driver; not checked) | GNU General Public License |
 | `src\Dev32\*`, `src\Lib32\*.c`, `src\Include\*`, `src\BTTV\bttvos2.c`, `bttv-cards.h`, `msp3400.h` | Stefan Milcke 2001-2004 | author line only, **no license text** |
 | `src\Install\rcstub.c`, `cardinfo.rc` | IBM MMPM sample files | IBM Corporation 1993 copyright, no terms in the file |
 | `doc\original\Tools\*`, `Makes\*`, `Build.CMD` | build scripts, Stefan Milcke | author line only |
