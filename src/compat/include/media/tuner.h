@@ -138,55 +138,7 @@
 # define TDA9887_DEEMPHASIS_75       (3<<16)
 # define TDA9887_AUTOMUTE            (1<<18)
 
-#ifdef __KERNEL__
-
-#define I2C_ADDR_TDA8290        0x4b
-#define I2C_ADDR_TDA8275        0x61
-
-struct tuner {
-	/* device */
-	struct i2c_client i2c;
-
-	/* state + config */
-	unsigned int initialized;
-	unsigned int type;            /* chip type */
-	unsigned int freq;            /* keep track of the current settings */
-	v4l2_std_id  std;
-	int          using_v4l2;
-
-	enum v4l2_tuner_type mode;
-	unsigned int input;
-
-	/* used by MT2032 */
-	unsigned int xogc;
-	unsigned int radio_if2;
-
-	/* used by tda8290 */
-	unsigned char i2c_easy_mode[2];
-	unsigned char i2c_set_freq[8];
-
-	/* function ptrs */
-	void (*tv_freq)(struct i2c_client *c, unsigned int freq);
-	void (*radio_freq)(struct i2c_client *c, unsigned int freq);
-	int  (*has_signal)(struct i2c_client *c);
-	int  (*is_stereo)(struct i2c_client *c);
-};
-
-extern unsigned int tuner_debug;
-extern unsigned const int tuner_count;
-
-extern int microtune_init(struct i2c_client *c);
-extern int tda8290_init(struct i2c_client *c);
-extern int default_tuner_init(struct i2c_client *c);
-
-#define tuner_warn(fmt, arg...) \
-	dev_printk(KERN_WARNING , &t->i2c.dev , fmt , ## arg)
-#define tuner_info(fmt, arg...) \
-	dev_printk(KERN_INFO , &t->i2c.dev , fmt , ## arg)
-#define tuner_dbg(fmt, arg...) \
-	if (tuner_debug) dev_printk(KERN_DEBUG , &t->i2c.dev , fmt , ## arg)
-
-#endif /* __KERNEL__ */
+/* the kernel-only part (struct tuner, I2C addresses of the tda8290) of the 2.6.12 header is cut: BTTV/tuner.c defines its own struct tuner */
 
 #endif
 

@@ -63,3 +63,21 @@ Then the real sources show the actual size of the problem:
 
 Look for the early-2004 LXAPI32 (Netlabs / Hobbes archives; BT32 0.8 matches it) before writing new glue code. If it is found, the work is mainly the GCC 9.2 compatibility of the Linux-style headers and the link recipe. If it is not found, this driver should stay at
 "source only" until someone with the card can test a redesign.
+
+## Third round: the 2003 Watcom LXAPI32 zip + Open Watcom (2026-11-18)
+
+Base used: `lxapi32.zip` (Watcom-based LXAPI32 of 2002-2003, provided by Martin, extracted next to this project as `..\LXAPI32-2003`, not part of this repository). It does have the old client API
+(`OS2_initlxapi`, `OS2_add_module`, `OS2_lxioctl`, `OS2_set_module_parm`, ...) and `ldefos2.h`/`stacktoflat.h`, so it is the right generation of tree. Compiler: Open Watcom 2 (`wcc386` for BTTV and Lib32, `wpp386 -xd` for Dev32).
+Compile-only probe, include order: `src\compat\include`, LXAPI32-2003 `Include`, `src\BTTV`, `src\Include`, `src\Dev32`, `src\Lib32`, Watcom `H`, DDK `base\h`.
+
+Result: 11 of 24 sources compile clean (blddat, bttv-cards, bttv-if, bttvos2, debug, idc, ioctl, kmod, misc, tda7432, tda9887, tuner). The rest still fail, and the remaining errors are API drift between the 2003 tree and the 2004 tree BT32 0.8 was written for:
+
+- `OS2_lock_mem`, `OS2_unlock_mem`, `OS2_open_device_called`, `OS2_close_device_called`, `OS2_get_module_version_code` do not exist in the 2003 tree; `OS2_set_module_parm` and `kernel_thread` and `DevPushfCli` have different parameter lists.
+- `I2C_TDA9874` (and probably more ids) missing from `linux\i2c-id.h`; `tvaudio.c` uses a `sem` that is not declared.
+- `Dev32\stream.h` uses the MMPM video-capture types `VCASCREENINFO`, `VCASETCAPTURERECT`, `VCAI_SCREENINFO`, `VCACAPISIZE`. They are in neither the Toolkit 4.5 `h` nor the DDK 2004 headers available here (probably in an MMPM/video-capture header set that is not installed).
+- `bttv-driver.c` lines 324 and 1165 reference an undeclared symbol `asdfasdf` (placeholder left in the source; GCC builds may have compiled it out).
+- Missing `<stdio.h>`/`<stdlib.h>`-style declarations (`sprintf`, `malloc`, `free`) in the Watcom kernel include setup, and the module objects (`bttv_module`, `tuner_module`, ...) that the 2004 `module.h` declared.
+
+Added to the overlay (so far): `MODULE_PARM_A` (2004 macro) in `linux\module.h`, `devhlp32.h` mapping `MAKE_FARPTR32` to `MAKE_FAR48` and `Int3()` to `int 3`. No `BT32.SYS` was linked; nothing was run.
+
+Remaining effort is mostly guesswork about the 2004 API (new code for lock_mem/unlock_mem etc.) in a driver that cannot be exercised without a BT8x8 card. The next useful input would be the real 2004 LXAPI32 headers (or the MMPM video-capture header with `VCASCREENINFO`).
