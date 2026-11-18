@@ -43,3 +43,23 @@ Compiles without errors: `Dev32\blddat.c`, `Lib32\debug.c`. All other files stop
 1. Find the LXAPI32 snapshot of early 2004 (BT32 0.8 matches it) and build both from it, with GCC 9.2 for the Linux-style code.
 2. Port `src\Dev32` to the 2006 LXAPI32 API and build both with the current tree (new code, no hardware to test: a BT8x8 card and a machine for it are needed).
 3. Stay at "source only": publish the layout and the documents, and keep this record.
+
+## Second round: porting src\Dev32 to the 2006 API (2026-11-18)
+
+Fixed in an overlay (`src\compat\`, see its README): the preprocessor flags (one `set CPP=-D...` line broke the probe script, the flags had to go inline), the include order (the kLIBC `C:\usr\include` before the DDK headers, otherwise the 16-bit
+DDK `os2.h` is used), two header errors of GCC 9.2 (`tss_struct`, `i2c_msg`), and five Linux headers from kernel 2.6.12 that the LXAPI32 tree lacks. A test file that includes the Linux headers BT32 uses (`linux/module.h`, `pci.h`, `i2c.h`, `videodev.h`, ...)
+now compiles without an error.
+
+Then the real sources show the actual size of the problem:
+
+- **More missing 2004 headers:** `linux/process.h` (included by six chip drivers and `stream.h`), `linux/wrapper.h`, `linux/i2c-compat.h`, `linux/tvaudio.h`, `ioremap.h`, `linux/malloc.h`, `asm/semaphor.h` (the last two are only renamed in the 2006 tree).
+- **The OS/2 client API of LXAPI32 no longer exists.** `src\Dev32` calls `OS2_initlxapi()`, `OS2_add_module()` (for the modules bttv, tvaudio, tuner, msp3400), `OS2_lock_mem()`, `OS2_unlock_mem()`, `OS2_get_current_pid()`, `OS2_lxioctl()`,
+  `OS2_open_device_called()`, `OS2_set_module_parm()`, `OS2_get_module_name()` and others. **None of these names appears anywhere in the 2006 LXAPI32 tree** (searched all sources, headers, asm and def files); the 2006 tree builds Linux modules a different way
+  (`modules\`, `makes\modmake.mak`). In the 2006 design BT32 would be a module loaded by LXAPI32 instead of a stand-alone driver that registers its modules itself.
+- Consequence: porting `src\Dev32` is not a set of renames. The driver start-up, the IOCTL path, the stream interface for MMPM and the module registration have to be redesigned against a different architecture, in code that cannot be run without a
+  BT8x8 card, and `LXAPI32.SYS` of the 2006 tree would have to be built and installed too (needs GCC-ELF era tools, see above).
+
+## Recommendation
+
+Look for the early-2004 LXAPI32 (Netlabs / Hobbes archives; BT32 0.8 matches it) before writing new glue code. If it is found, the work is mainly the GCC 9.2 compatibility of the Linux-style headers and the link recipe. If it is not found, this driver should stay at
+"source only" until someone with the card can test a redesign.
