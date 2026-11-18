@@ -24,6 +24,10 @@ The include paths inside the sources are relative to each other (for example `<.
 
 - `README.md` (plan template), `doc\CHANGES.md`, `doc\LICENSES.md`, `.gitignore`.
 
+## Build attempt (2026-11-18)
+
+Steps 2 and 3 were tried and recorded in `doc\BUILD-ATTEMPT.md`: GCC 9.2 against the GitHub LXAPI32 tree compiles 2 of 24 C files; BT32 needs the 2004 LXAPI32 API that the available 2006 tree no longer has. No file in `src\` changed.
+
 ## Not done
 
 - **Build with the new tools (plan steps 2 and 3).** Not possible: BT32 needs the LXAPI32 development tree (Linux headers and libraries, `https://github.com/OS2World/DRV-LXAPI32`) and was built with GCC (ELF) + `ELFOMF`, IBM `ALP`,

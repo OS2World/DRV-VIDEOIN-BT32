@@ -5,7 +5,7 @@
 
 | Field | Details |
 |---|---|
-| Status | **Source only. Not built and not tested** with the tools of the driver update plan: it cannot be built with Open Watcom alone (see "Build tools"). Nothing in `src\` was changed from the original. |
+| Status | **Source only. Not built and not tested**: plan steps 2 and 3 were tried and failed (see "Build tools" and `doc\BUILD-ATTEMPT.md`). Nothing in `src\` was changed from the original. |
 | Tested on | Not tested (no BT8x8 card, and the build is not reproducible yet). |
 | License | GNU GPL, as stated by the original README; see [LICENSE](LICENSE) and **the license notes below and in [doc/LICENSES.md](doc/LICENSES.md): the `LICENSE` file is the Library GPL (LGPL 2.0), most of the code is derived from GPL code of the Linux kernel, and the files of the OS/2 port have no license header.** |
 | Authors | Stefan Milcke (OS/2 port, 2001-2004, version 0.8); Ralph Metzler, Gerd Knorr and others (Linux `bttv`); Csaba Halasz, Eric Sandeen (chip drivers of the Linux kernel); Creative Labs (`hwaccess.h`); published on OS2World by Martin Iturbide (2013) |
@@ -37,7 +37,7 @@ The plan asks for an Open Watcom 2 build with `wmake`. That is not possible for 
    (UNIAUD32 uses Open Watcom 1.9 and `ILINK`), but LXAPI32 would have to be ported to that first.
 3. The driver needs `LXAPI32.SYS` at run time and a BT8x8 card to be tested.
 
-A possible path: port or rebuild LXAPI32 with Open Watcom (`wcc386`, `wlink` or `ILINK`), then build `bttv.lib` and `BT32.SYS` from `src\` with it, following the recipe of the UNIAUD32 build. Until then the status stays "source only".
+**Build attempt, 2026-11-18** (details in [doc/BUILD-ATTEMPT.md](doc/BUILD-ATTEMPT.md)): with GCC 9.2 and the LXAPI32 tree from GitHub, only 2 of the 24 C files compile. The cause is not only the old toolchain: BT32 was written for the **2004, Watcom-style LXAPI32 API** (`__far`, `MAKE_FARPTR32`, `<ldefos2.h>`, `<stacktoflat.h>`, `<asm/semaphor.h>`), and the only LXAPI32 tree available is the **2006, GCC-only version** that no longer has those headers; the old Linux headers also need fixes for GCC 9.2. To build BT32 either the 2004 LXAPI32 snapshot has to be found, or `src\Dev32` has to be ported to the 2006 API (new code that cannot be tested without a BT8x8 card). Until then the status stays "source only".
 
 ## Parameters and boot messages (original behaviour)
 
